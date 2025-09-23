@@ -42,8 +42,12 @@ A seguir está a lista de livros, contendo livros que já li, estou lendo e pret
 
 ### Livros
 
-| Livro | Nota (0-10) | Status | Observações |
-| :--- | :---: | :---: | :--- |
-| **Head First Java** - Robert C. Martin | 9.5 | Lido | Leitura essencial para qualquer desenvolvedor. Mudou minha forma de escrever código. |
-| **O Programador Pragmático** - Andrew Hunt | 10 | Lido | Cheio de dicas práticas e atemporais. Um guia para a carreira. |
-| **Arquitetura Limpa** - Robert C. Martin | 8.5 | Lido | Expande os conceitos do Código Limpo para o nível de sistema. Denso, mas recompensador. |
+| Livro | Autor | Nota (0-10) | Status | Observações |
+| :--- | :---: | :---: | :--- | :--- |
+| **Head First Java** | Kathy Sierra, Bert Bates, Trisha Gee | 7.1 | Lido | Uma boa leitura para reafirmar os principais conceitos do Java, mas grande parte é descartável em Java para WEB. |
+| **Spring Start Here** | Laurentiu Spilca | N/A | Lendo | N/A |
+| **Implementing Domain-Driven Design** | Vaughn Vernon | N/A | Pretendo ler | N/A |
+| **Software Engineering** | Ian Sommerville | N/A | Pretendo ler | N/A |
+| **The Clean Coder** | Robert C. Martin | N/A | Pretendo ler | N/A |
+| **Refactoring** | Martin Fowler | N/A | Pretendo ler | N/A |
+| **Design Patterns: Elements of Reusable Object-Oriented Software** | Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides | N/A | Pretendo ler | N/A |
