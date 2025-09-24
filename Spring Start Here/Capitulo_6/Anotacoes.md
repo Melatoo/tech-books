@@ -1,5 +1,3 @@
-# Anotacoes
-
 # Aspects
 
 *Aspects* são maneiras do framework interceptar uma chamada de um método e possivelmente alterando sua execução.
