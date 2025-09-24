@@ -1,6 +1,6 @@
 # Aspects
 
-*Aspects* são maneiras do framework interceptar uma chamada de um método e possivelmente alterando sua execução.
+*Aspects* são maneiras do framework interceptar uma chamada de um método e possivelmente alterar sua execução.
 
 ## Como *aspects* funcionam no Spring
 
