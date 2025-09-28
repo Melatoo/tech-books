@@ -16,7 +16,9 @@ Para exemplificar cada um dos escopos, construiremos uma página de login simple
 
 ## Utilizando o escopo de requisição
 
-Esse escopo cria uma instância para cada requisição HTTP. Utilizaremos o escopo de requisição para construir a lógica do login. Para isso, usaremos a página HTML nomeada “login.html” a seguir:
+Esse escopo cria uma instância para cada requisição HTTP. Utilizaremos o escopo de requisição para construir a lógica do login, garantindo que as credenciais sensíveis do usuário existam apenas durante a requisição de login.
+
+Para isso, usaremos a página HTML nomeada “login.html” a seguir:
 
 ```html
 <!DOCTYPE html>
@@ -36,7 +38,7 @@ Esse escopo cria uma instância para cada requisição HTTP. Utilizaremos o esco
 </html>
 ```
 
-Quando o usuário entrar na página raiz da aplicação, uma requisição get será enviada ao servidor, o servidor deve retornar a página de login acima. Após isso, ao preencher e enviar o formulário, uma requisição POST será enviada, que deve utilizar a lógica de login para verificar se o usuário logará ou não. Para isso, basta o controller exemplificado a seguir:
+O controller a seguir lida com as requisições `GET` (para exibir a página) e `POST` (para processar o formulário):
 
 ```java
 @Controller
@@ -65,4 +67,150 @@ public class LoginController {
 }
 ```
 
-Entretanto, esse controller é um singleton padrão do Spring
+Para a lógica de login, criamos um bean `LoginProcessor` com escopo de requisição. Ele armazenará as credenciais e as validará. Por ser `@RequestScope`, cada tentativa de login terá sua própria instância, evitando problemas de concorrência e garantindo que as credenciais sejam descartadas após a requisição.
+
+```java
+@Component
+@RequestScope
+public class LoginProcessor {
+    private String username;
+    private String password;
+
+    public boolean login() {
+        String username = this.getUsername();
+        String password = this.getPassword();
+        if ("natalie".equals(username) && "password".equals(password)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+```
+
+## Utilizando o escopo de sessão
+
+O escopo de sessão cria uma instância do bean por sessão HTTP de um cliente. Isso nos permite manter informações sobre o usuário logado enquanto ele navega por diferentes páginas da aplicação.
+
+Continuando o exemplo, após um login bem-sucedido, queremos que o usuário permaneça logado. Para isso, criamos um serviço `LoggedUserManagementService` com escopo de sessão (`@SessionScope`).
+
+```java
+@Service
+@SessionScope
+public class LoggedUserManagementService {
+    private String username;
+}
+```
+
+Modificamos o `LoginProcessor` para, em caso de sucesso, armazenar o nome de usuário no bean de sessão.
+
+Java
+
+```java
+@Component
+@RequestScope
+public class LoginProcessor {
+    private final LoggedUserManagementService loggedUserManagementService;
+    public LoginProcessor(LoggedUserManagementService loggedUserManagementService) {
+        this.loggedUserManagementService = loggedUserManagementService;
+    }
+
+    public boolean login() {
+        boolean loginResult = false;
+        if ("natalie".equals(username) && "password".equals(password)) {
+            loginResult = true;
+            loggedUserManagementService.setUsername(username);
+        }
+        return loginResult;
+    }
+}
+```
+
+Agora, em outras partes da aplicação, podemos verificar se o usuário está logado injetando `LoggedUserManagementService` e checando se o `username` não é nulo. Se um usuário não logado tentar acessar uma página restrita, podemos redirecioná-lo para a página de login.
+
+```java
+@Controller
+public class MainController {
+    private final LoggedUserManagementService loggedUserManagementService;
+    // ...
+    @GetMapping("/main")
+    public String home(@RequestParam(required = false) String logout, Model model) {
+        if (logout != null) {
+            loggedUserManagementService.setUsername(null);
+        }
+
+        String username = loggedUserManagementService.getUsername();
+        if (username == null) {
+            return "redirect:/";
+        }
+        model.addAttribute("username" , username);
+        return "main.html";
+    }
+}
+```
+
+Finalmente, o `LoginController` é ajustado para redirecionar para a página principal (`/main`) após um login bem-sucedido.
+
+```java
+@PostMapping("/")
+public String loginPost(...) {
+    boolean loggedIn = loginProcessor.login();
+    if (loggedIn) {
+        return "redirect:/main";
+    }
+    model.addAttribute("message", "Login failed!");
+    return "login.html";
+}
+```
+
+## Utilizando o escopo de aplicação
+
+Um bean com escopo de aplicação é, na prática, um singleton para toda a aplicação web. Apenas uma instância do bean existe e é compartilhada por todas as requisições de todos os usuários. É importante ressaltar que seu uso é **desaconselhado para dados mutáveis** devido a problemas de concorrência (race conditions), sendo preferível usar um banco de dados.
+
+Para demonstrar, vamos adicionar um contador de tentativas de login em nossa aplicação. Criaremos um `LoginCountService` com a anotação `@ApplicationScope`.
+
+```java
+@Service
+@ApplicationScope
+public class LoginCountService {
+    private int count;
+
+    public void increment() {
+        count++;
+    }
+
+    public int getCount() {
+        return count;
+    }
+}
+```
+
+Injetamos este serviço no nosso `LoginProcessor` (que é `@RequestScope`) e chamamos o método `increment()` a cada tentativa de login.
+
+```java
+@Component
+@RequestScope
+public class LoginProcessor {
+    private final LoginCountService loginCountService;
+
+    public LoginProcessor(..., LoginCountService loginCountService) {
+        this.loginCountService = loginCountService;
+    }
+
+    public boolean login() {
+        loginCountService.increment();
+    }
+}
+```
+
+Por fim, exibimos o contador na página principal, obtendo o valor no `MainController` e passando-o para a view.
+
+```java
+// Dentro do MainController
+@GetMapping("/main")
+public String home() {
+    int count = loginCountService.getCount();
+    model.addAttribute("loginCount", count);
+    return "main.html";
+}
+```

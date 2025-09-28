@@ -9,13 +9,13 @@ No começo da história do desenvolvimento de software, cada aplicação era fei
 - Logar mensagens de erro/info/warn;
 - Usar transações para mudanças em dados;
 - Mecanismos de segurança comuns;
-- Maneiras de comunicação de aplicaçVão com aplicação;
+- Maneiras de comunicação de aplicação com aplicação;
 
 entre outros.
 
 Sendo assim, também perceberam que as regras de negócio se tornaram a menor parte do código, que era ocupado, em sua maior parte, por aquilo que podia se considerar o “motor” da aplicação.
 
-Com isso, vieram os frameworks, que prometem diminuir substancialmente o gasto de tempo/esforço com requisitos genéricos e essenciais de uma aplicação, permitindo maior gasto nas regras de negócio.V
+Com isso, vieram os frameworks, que prometem diminuir substancialmente o gasto de tempo/esforço com requisitos genéricos e essenciais de uma aplicação, permitindo maior gasto nas regras de negócio.
 
 ## O que é o Spring
 
@@ -881,126 +881,217 @@ Sendo assim, ao acessar a página [localhost:8080/home](http://localhost:8080/ho
 
 ![image.png](image%203.png)
 
-# Implementando web apps com Spring Boot e Spring MVC
+# Spring web scopes
 
-## Apps com views dinâmicas
+Alguns tipos de escopos de beans são relevantes apenas em aplicativos web, eles são chamados de escopos web.
 
-A grande maioria dos apps web modernos precisam mostrar dados dinâmicos para seus usuários. Com isso, precisamos que a página mude de acordo com os dados de resposta, chamamos isso de view dinâmica.
+- Escopo de requisição (*request scope*): O Spring cria uma instância de uma classe bean para cada requisição HTTP. Essa instância vive apenas para aquela requisição específica.
+- Escopo de sesssão (*session scope*): O Spring cria uma instância e a mantém na memória enquanto a sessão HTTP perdurar. Além disso, linka a instãncia com a sessão do cliente.
+- Escopo de aplicação (*application scope*): Uma instância única no contexto, disponível enquando o app estiver executando.
 
-Para isso, além de usar a *annotation* `@RequestMapping` no método do controller, também utilizaremos um parâmetro do tipo `Model`, que armazena os dados que o controller enviará para a view. Um exemplo seria:
+Para exemplificar cada um dos escopos, construiremos uma página de login simples, que possuirá três etapas:
 
-```java
-@Controller
-public class MainController {
-	@RequestMapping("/home")
-	public String home(Model page) {
-		page.addAttribute("username", "Katy");
-		page.addAttribute("color", "red");
-		return "home.html";
-	}
-}
-```
+1. Implementar a lógica de login;
+2. Manter os detalhes do usuário logado;
+3. Contar as requisições de login.
 
-Onde o método `addAtribute()` adiciona um valor a ser passado para a view, sendo o primeiro parâmetro a key e o segundo o valor a ser passado.
+## Utilizando o escopo de requisição
 
-### Obtendo dados na requisição HTTP
+Esse escopo cria uma instância para cada requisição HTTP. Utilizaremos o escopo de requisição para construir a lógica do login, garantindo que as credenciais sensíveis do usuário existam apenas durante a requisição de login.
 
-É possível enviar dados pela requisição HTTP das seguintes maneiras:
-
-- Parâmetro de requisição HTTP (*request parameter)*: uma maneira simples de enviar pequenas quantidades de dados que seguem o formato de pares chave-valor. Para enviar dados dessa maneira, basta acrescê-los ao URI em uma expressão de requisição de busca. Também são chamados de parâmetros de query.
-- Cabeçalho de requisição HTTP (*request header*): uma maneira parecida com os parâmetros da requisição, entretanto, não aparecem no URI, e sim no cabeçalho da requisição.
-- Variável de caminho (*path variable*): envia dados pelo próprio caminho da requisição, utilizada para valores obrigatórios.
-- Corpo de requisição HTTP (*request body*): utilizada para enviar grandes quantidades de dados, normalmente em string.
-
-### Utilizando parâmetros de requisição para enviar dados do cliente para servidor
-
-Essa maneira de se enviar dados é normalmente utilizada quando os dados contemplam dois critérios: 
-
-- A quantidade de dados enviada não é larga, já que é limitada em cerca de 2000 caracteres.
-- São dados opcionais.
-
-Um caso de uso bem comum é enviar dados para definir buscas e critérios de filtragem.
-
-Para utilizar essa maneira, basta acrescentar a expressão de requisição de busca, definida por `?`, e seguir com o formato de pares chave-valor, um exemplo seria: [`http://example.com/products?brand=honda`](http://example.com/products?brand=honda).
-
-Para lidar esses dados dentro do controller, criamos um parâmetro com a *annotation* `@RequestParam`, um exemplo é:
-
-```java
-@Controller
-public class MainController {
-	@RequestMapping("/home")
-	public String home(@RequestParam String color, Model page) {
-		page.addAttribute("username", "Katy");
-		page.addAttribute("color", color);
-		return "home.html";
-	}
-}
-```
-
-Um parâmetro de requisição é obrigatório por padrão, para defini-lo como opcional, é necessário utilizar o parâmetro `optional=true` na *annotation*.
-
-### Utilizando variáveis de caminho para enviar dados do cliente ao servidor
-
-Essa maneira de enviar dados é mais fácil ser lida do que parâmetros de busca, a tornando mais amigável para mecanismos de buscas. Entretanto, não deve ser utilizada para dados opcionais é uma boa prática limitar o caminho em até duas variáveis. 
-
-Para utilizar variáveis de caminho, definimos os dados diretamente no caminho do aplicativo, por exemplo: `http://localhost:8080/home/blue`. E, para serem lidos dentro do controller, basta utilizarmos um parâmetro com a *annotation* `@PathVariable`, um exemplo seria:
-
-```java
-@RequestMapping("/home/{color}")
-public String home(@PathVariable String color, Model page) {
-	page.addAttribute("username", "Katy");
-	page.addAttribute("color", color);
-	return "home.html";
-}
-```
-
-## Utilizando os métodos HTTP GET e POST
-
-Para expressar a intenção do cliente, uma requisição HTTP utiliza um verbo, que é o método HTTP. Se a intenção é apenas recuperar dados, por exemplo, o método GET é utilizado. Se a intenção for de alterar, adicionar ou deletar dados, outros verbos devem ser utilizados para representar essa intenção. É crucial que o método HTTP não seja utilizado de maneira contrária ao seu propósito.
-
-Os métodos HTTP mais comuns são:
-
-- **GET**: A requisição do cliente apenas recupera dados.
-- **POST**: A requisição do cliente envia novos dados para serem adicionados pelo servidor.
-- **PUT**: A requisição do cliente altera um registro de dados no lado do servidor.
-- **PATCH**: A requisição do cliente altera parcialmente um registro de dados no lado do servidor.
-- **DELETE**: A requisição do cliente deleta dados no lado do servidor.
-
-É possível mapear múltiplas ações de um controller para o mesmo caminho, desde que utilizem métodos HTTP diferentes. Por padrão, a anotação `@RequestMapping` utiliza o método GET, mas isso pode ser alterado através do atributo `method`. 
-
-```java
-@RequestMapping(path = "/products", method = RequestMethod.POST)
-public String addProduct() {}
-```
-
-No entanto, para manter o código mais claro e direto, geralmente são utilizadas anotações dedicadas para cada método HTTP, como `@GetMapping` e `@PostMapping`.
-
-```java
-@Controller
-public class ProductsController {
-    @GetMapping("/products")
-    public String viewProducts(Model model) {
-        return "products.html";
-    }
-
-    @PostMapping("/products")
-    public String addProduct(
-        @RequestParam String name,
-        @RequestParam double price,
-        Model model
-    ) {
-        return "products.html";
-    }
-}
-```
-
-Para enviar dados através de um método POST a partir do navegador, geralmente se utiliza um formulário HTML. A tag `<form>` é configurada com o `action` apontando para o caminho do endpoint e o `method` definido como `"post"`. Os campos de entrada (`<input>`) dentro do formulário terão seus valores enviados como parâmetros de requisição.
+Para isso, usaremos a página HTML nomeada “login.html” a seguir:
 
 ```html
-<h2>Adicionar um produto</h2>
-<form action="/products" method="post">
-    Nome: <input type="text" name="name"><br/>
-    Preço: <input type="number" step="any" name="price"><br/>
-    <button type="submit">Adicionar produto</button>
-</form>
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>Login</title>
+</head>
+<body>
+	<form action="/" method="post">
+		Username: <input type="text" name="username" /><br />
+		Password: <input type="password" name="password" /><br />
+		<button type="submit">Log in</button>
+	</form>
+	<p th:text="${message}"></p>
+</body>
+</html>
+```
+
+O controller a seguir lida com as requisições `GET` (para exibir a página) e `POST` (para processar o formulário):
+
+```java
+@Controller
+public class LoginController {
+	@GetMapping("/")
+	public String loginGet() {
+		return "login.html";
+	}
+	
+	@PostMapping("/")
+	public String loginPost(
+		@RequestParam String username,
+		@RequestParam String password,
+		Model model
+	) {
+		boolean loggedIn = false;
+		
+		if (loggedIn) {
+			model.addAttribute("message", "You are now logged in.");
+		} else {
+			model.addAttribute("message", "Login failed!");
+		}
+		
+		return "login.html";
+	}
+}
+```
+
+Para a lógica de login, criamos um bean `LoginProcessor` com escopo de requisição. Ele armazenará as credenciais e as validará. Por ser `@RequestScope`, cada tentativa de login terá sua própria instância, evitando problemas de concorrência e garantindo que as credenciais sejam descartadas após a requisição.
+
+```java
+@Component
+@RequestScope
+public class LoginProcessor {
+    private String username;
+    private String password;
+
+    public boolean login() {
+        String username = this.getUsername();
+        String password = this.getPassword();
+        if ("natalie".equals(username) && "password".equals(password)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+```
+
+## Utilizando o escopo de sessão
+
+O escopo de sessão cria uma instância do bean por sessão HTTP de um cliente. Isso nos permite manter informações sobre o usuário logado enquanto ele navega por diferentes páginas da aplicação.
+
+Continuando o exemplo, após um login bem-sucedido, queremos que o usuário permaneça logado. Para isso, criamos um serviço `LoggedUserManagementService` com escopo de sessão (`@SessionScope`).
+
+```java
+@Service
+@SessionScope
+public class LoggedUserManagementService {
+    private String username;
+}
+```
+
+Modificamos o `LoginProcessor` para, em caso de sucesso, armazenar o nome de usuário no bean de sessão.
+
+Java
+
+```java
+@Component
+@RequestScope
+public class LoginProcessor {
+    private final LoggedUserManagementService loggedUserManagementService;
+    public LoginProcessor(LoggedUserManagementService loggedUserManagementService) {
+        this.loggedUserManagementService = loggedUserManagementService;
+    }
+
+    public boolean login() {
+        boolean loginResult = false;
+        if ("natalie".equals(username) && "password".equals(password)) {
+            loginResult = true;
+            loggedUserManagementService.setUsername(username);
+        }
+        return loginResult;
+    }
+}
+```
+
+Agora, em outras partes da aplicação, podemos verificar se o usuário está logado injetando `LoggedUserManagementService` e checando se o `username` não é nulo. Se um usuário não logado tentar acessar uma página restrita, podemos redirecioná-lo para a página de login.
+
+```java
+@Controller
+public class MainController {
+    private final LoggedUserManagementService loggedUserManagementService;
+    // ...
+    @GetMapping("/main")
+    public String home(@RequestParam(required = false) String logout, Model model) {
+        if (logout != null) {
+            loggedUserManagementService.setUsername(null);
+        }
+
+        String username = loggedUserManagementService.getUsername();
+        if (username == null) {
+            return "redirect:/";
+        }
+        model.addAttribute("username" , username);
+        return "main.html";
+    }
+}
+```
+
+Finalmente, o `LoginController` é ajustado para redirecionar para a página principal (`/main`) após um login bem-sucedido.
+
+```java
+@PostMapping("/")
+public String loginPost(...) {
+    boolean loggedIn = loginProcessor.login();
+    if (loggedIn) {
+        return "redirect:/main";
+    }
+    model.addAttribute("message", "Login failed!");
+    return "login.html";
+}
+```
+
+## Utilizando o escopo de aplicação
+
+Um bean com escopo de aplicação é, na prática, um singleton para toda a aplicação web. Apenas uma instância do bean existe e é compartilhada por todas as requisições de todos os usuários. É importante ressaltar que seu uso é **desaconselhado para dados mutáveis** devido a problemas de concorrência (race conditions), sendo preferível usar um banco de dados.
+
+Para demonstrar, vamos adicionar um contador de tentativas de login em nossa aplicação. Criaremos um `LoginCountService` com a anotação `@ApplicationScope`.
+
+```java
+@Service
+@ApplicationScope
+public class LoginCountService {
+    private int count;
+
+    public void increment() {
+        count++;
+    }
+
+    public int getCount() {
+        return count;
+    }
+}
+```
+
+Injetamos este serviço no nosso `LoginProcessor` (que é `@RequestScope`) e chamamos o método `increment()` a cada tentativa de login.
+
+```java
+@Component
+@RequestScope
+public class LoginProcessor {
+    private final LoginCountService loginCountService;
+
+    public LoginProcessor(..., LoginCountService loginCountService) {
+        this.loginCountService = loginCountService;
+    }
+
+    public boolean login() {
+        loginCountService.increment();
+    }
+}
+```
+
+Por fim, exibimos o contador na página principal, obtendo o valor no `MainController` e passando-o para a view.
+
+```java
+// Dentro do MainController
+@GetMapping("/main")
+public String home() {
+    int count = loginCountService.getCount();
+    model.addAttribute("loginCount", count);
+    return "main.html";
+}
 ```
