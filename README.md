@@ -51,3 +51,8 @@ A seguir está a lista de livros, contendo livros que já li, estou lendo e pret
 | **The Clean Coder** | Robert C. Martin | N/A | Pretendo ler | N/A |
 | **Refactoring** | Martin Fowler | N/A | Pretendo ler | N/A |
 | **Design Patterns: Elements of Reusable Object-Oriented Software** | Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides | N/A | Pretendo ler | N/A |
+| **Fundamentals of Software Architecture** | Mark Richards, Neal Ford | N/A | Pretendo ler | N/A |
+| **Software Architecture: The Hard Parts** | Neal Ford, Mark Richards | N/A | Pretendo ler | N/A |
+| **Building Microservices** | Sam Newman | N/A | Pretendo ler | N/A
+| **NOSQL Distilled** | Pramod J. Sadalage, Martin Fowler | N/A | Pretendo ler | N/A |
+| **Learning JavaScript Data Structures and Algorithms** | Loiane Groner | N/A | Pretendo ler | N/A |
