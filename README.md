@@ -11,7 +11,6 @@ Cada livro possui sua própria pasta. Dentro da pasta de cada livro, há subpast
   * **`anotacoes.md`**: Anotações livres e os principais *insights* que tive durante a leitura do capítulo.
   * **`sumario.md`**: Um resumo estruturado com os pontos mais importantes e os conceitos-chave abordados no capítulo.
   * **`questionario.md`**: Uma lista de perguntas que elaborei para testar meu próprio conhecimento sobre o conteúdo.
-  * **`respostas.md`**: As respostas para as perguntas listadas no arquivo `questionario.md`.
 
 A estrutura de diretórios segue o modelo abaixo:
 
@@ -22,13 +21,11 @@ A estrutura de diretórios segue o modelo abaixo:
 │   │   ├── anotacoes.md
 │   │   ├── sumario.md
 │   │   ├── questionario.md
-│   │   └── respostas.md
 │   │
 │   └── Capitulo_02/
 │       ├── anotacoes.md
 │       ├── sumario.md
 │       ├── questionario.md
-│       └── respostas.md
 │
 ├── NOME_DO_LIVRO_2/
 │   └── ...
