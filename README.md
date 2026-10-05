@@ -42,7 +42,8 @@ A seguir está a lista de livros, contendo livros que já li, estou lendo e pret
 | Livro | Autor | Nota (0-10) | Status | Observações |
 | :--- | :---: | :---: | :--- | :--- |
 | **Head First Java** | Kathy Sierra, Bert Bates, Trisha Gee | 7.1 | Lido | Uma boa leitura para reafirmar os principais conceitos do Java, mas grande parte considerei descartável, por esse motivo não possui todos os capítulos neste repositório. |
-| **Spring Start Here** | Laurentiu Spilca | N/A | Lendo | N/A |
+| **Spring Start Here** | Laurentiu Spilca | 8.1 | Lido | N/A |
+| **Designing Data-Intensive Applications** | Martin Kleppmann | N/A | Lendo | 2ª edição |
 | **Implementing Domain-Driven Design** | Vaughn Vernon | N/A | Pretendo ler | N/A |
 | **Software Engineering** | Ian Sommerville | N/A | Pretendo ler | N/A |
 | **The Clean Coder** | Robert C. Martin | N/A | Pretendo ler | N/A |
