@@ -1,5 +1,3 @@
-# Anotações
-
 # Spring no mundo real
 
 ## O que são frameworks?

@@ -1,5 +1,3 @@
-# Anotações
-
 # Abstraction
 
 A Abstração é um dos pilares da programação orientada a objetos, já que permite o desacoplamento. Em Spring, ela também é importante
@@ -18,11 +16,11 @@ Em um caso onde um app de gerenciamento de tarefas permite que os usuários deix
 
 A escolha por implementar diretamente as classes CommentService (onde está as regras de negócio), CommentRepository (onde há o armazenamento no banco de dados) e CommentNotificationProxy (conexão com serviço externo para enviar o e-mail), torna o acoplamento alto, já que para cada novo tipo de armazenamento (diferentes dbs) ou novo serviço de envio de notificação (whatsapp por exemplo) seria necessário criar um novo objeto.
 
-![image.png](image.png)
+![image.png](img/cap-04-1.png)
 
 Sendo assim, é melhor organizar o repository do comentário, bem como o proxy de notificação externa como interfaces, permitindo que o service apenas deixe claro que quer que o comentário seja armazenado e que uma notificação seja enviada, sem se preocupar em como isso seria feito.
 
-![image.png](image%201.png)
+![image.png](img/cap-04-2.png)
 
 ## Usando *dependency injection* com abstrações
 
@@ -40,4 +38,4 @@ Caso haja mais de um objeto que implemente uma abstração, e algum outro objeto
 
 É possível explicitar para o Spring qual a responsabilidade do objeto quando definimos uma classe como Bean, como é o caso das *annotations* `@Service` e `@Repository` que, no exemplo anterior, ficariam assim:
 
-![image.png](image%202.png)
+![image.png](img/cap-04-3.png)
