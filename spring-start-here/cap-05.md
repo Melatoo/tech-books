@@ -1,5 +1,3 @@
-# Anotações
-
 # Bean scopes e ciclo de vida
 
 O Spring possui múltiplas abordagens para criar beans e gerenciar seu ciclo de vida, chamamos essas abordagens de escopo. Os dois escopos mais utilizados são: *singleton* e *prototype*.

@@ -1,5 +1,3 @@
-# Anotações
-
 ## Definindo beans
 
 Beans são instâncias de objetos que são controlados pelo Spring.

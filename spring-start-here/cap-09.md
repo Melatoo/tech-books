@@ -1,5 +1,3 @@
-# Anotacoes
-
 # Spring web scopes
 
 Alguns tipos de escopos de beans são relevantes apenas em aplicativos web, eles são chamados de escopos web.

@@ -1,5 +1,3 @@
-# Anotações
-
 # Relacionando Beans
 
 Em programação orientada a objetos, é comum que um objeto tenha que delegar responsabilidades a outros. Isso não é diferente no Spring, e há duas principais maneiras de estabelecer relações no framework:

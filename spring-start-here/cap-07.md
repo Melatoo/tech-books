@@ -78,4 +78,4 @@ Sendo assim, ao acessar a página [localhost:8080/home](http://localhost:8080/ho
 6. Agora o *dispatcher* precisa encontrar a view dentro dos conteúdos e enviar a reposta ao cliente. Para isso, ele delega a responsabilidade ao componente *View Resolver*.
 7. Após encontrar, o *dispatcher* retorna a view renderizada através da resposta HTTP.
 
-![image.png](image.png)
+![image.png](img/cap-07-1.png)
